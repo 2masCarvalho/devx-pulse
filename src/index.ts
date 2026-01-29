@@ -1,18 +1,32 @@
-/**
- * Welcome to Cloudflare Workers! This is your first worker.
- *
- * - Run `npm run dev` in your terminal to start a development server
- * - Open a browser tab at http://localhost:8787/ to see your worker in action
- * - Run `npm run deploy` to publish your worker
- *
- * Bind resources to your worker in `wrangler.jsonc`. After adding bindings, a type definition for the
- * `Env` object can be regenerated with `npm run cf-typegen`.
- *
- * Learn more at https://developers.cloudflare.com/workers/
- */
+import type { Env, FeedbackInput } from './types';
+import { handleRequest } from './routes';
+import { analyzeFeedback } from './ai';
+import { insertFeedback } from './db';
 
 export default {
-	async fetch(request, env, ctx): Promise<Response> {
-		return new Response('Hello World!');
+	async fetch(request: Request, env: Env): Promise<Response> {
+		try {
+			return await handleRequest(request, env);
+		} catch (err) {
+			console.error('Unhandled error:', err);
+			return new Response(JSON.stringify({ error: 'Internal server error' }), {
+				status: 500,
+				headers: { 'Content-Type': 'application/json' },
+			});
+		}
 	},
-} satisfies ExportedHandler<Env>;
+
+	async queue(batch: MessageBatch<FeedbackInput>, env: Env): Promise<void> {
+		for (const message of batch.messages) {
+			try {
+				const item = message.body;
+				const analysis = await analyzeFeedback(env.AI, item.content);
+				await insertFeedback(env.DB, item, analysis);
+				message.ack();
+			} catch (err) {
+				console.error('Queue processing error:', err);
+				message.retry();
+			}
+		}
+	},
+};

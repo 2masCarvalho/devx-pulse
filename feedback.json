@@ -1,0 +1,242 @@
+[
+  {
+    "id": "fb_101",
+    "source": "Support Ticket",
+    "user_tier": "Enterprise",
+    "product_area": "Workers",
+    "sentiment": "Negative",
+    "content": "URGENT: We are experiencing consistent cold start times of 800-1200ms on our Workers deployment in the EU region. This is severely impacting our SLA commitments. Our account manager indicated Bundled usage would mitigate this, but we are still seeing unacceptable latency spikes during low-traffic periods. Request immediate escalation."
+  },
+  {
+    "id": "fb_102",
+    "source": "Discord",
+    "user_tier": "Free",
+    "product_area": "Workers",
+    "sentiment": "Negative",
+    "content": "hey so im trying to deploy my first worker and wrangler keeps saying my wrangler.toml is invalid but i literally copied it from the docs?? anyone else have this issue lol"
+  },
+  {
+    "id": "fb_103",
+    "source": "GitHub Issue",
+    "user_tier": "Pro",
+    "product_area": "D1",
+    "sentiment": "Negative",
+    "content": "### Bug Report\n\n**Environment:** wrangler 3.78.2, D1 beta\n\n**Description:** Attempting to restore from automated backup created 2024-01-15T03:00:00Z fails silently. The `wrangler d1 backup restore` command returns exit code 0 but database remains in previous state. Verified backup exists via `wrangler d1 backup list`.\n\n**Expected:** Database restored to backup state\n**Actual:** No restoration occurs, no error thrown"
+  },
+  {
+    "id": "fb_104",
+    "source": "Twitter",
+    "user_tier": "Free",
+    "product_area": "Workers AI",
+    "sentiment": "Neutral",
+    "content": "Been playing with @CloudflareDev Workers AI and the Llama-3 latency is... interesting. Sometimes sub-second, sometimes 8+ seconds. Is this expected during beta? Would love some clarity on what to expect."
+  },
+  {
+    "id": "fb_105",
+    "source": "Community Forum",
+    "user_tier": "Free",
+    "product_area": "General/Billing",
+    "sentiment": "Negative",
+    "content": "I'm completely lost on the pricing structure. The docs say Workers has 100k requests/day free, but then there's this \"Bundled\" vs \"Unbound\" distinction that I can't find explained anywhere. Spent 2 hours trying to understand what I'll actually be charged. Can someone point me to current pricing docs?"
+  },
+  {
+    "id": "fb_106",
+    "source": "Support Ticket",
+    "user_tier": "Enterprise",
+    "product_area": "Workers",
+    "sentiment": "Negative",
+    "content": "Our engineering team has identified that CPU time limits on Bundled usage are causing request failures during peak load. We are hitting the 50ms CPU limit on approximately 3% of requests, resulting in Error 1102. Given our contract terms, we need guidance on optimizing our Worker or adjusting our plan configuration."
+  },
+  {
+    "id": "fb_107",
+    "source": "Discord",
+    "user_tier": "Free",
+    "product_area": "D1",
+    "sentiment": "Negative",
+    "content": "d1 is giving me sql syntax errors on a query that works perfectly fine in sqlite locally. is there a list of whats not supported? the beta limitations page doesnt mention anything about CTEs"
+  },
+  {
+    "id": "fb_108",
+    "source": "GitHub Issue",
+    "user_tier": "Pro",
+    "product_area": "Workers AI",
+    "sentiment": "Negative",
+    "content": "### Feature Request / Bug\n\nRate limits on Workers AI are too restrictive for production use. Currently hitting the 50 req/min limit on @cf/meta/llama-3-8b-instruct within seconds of moderate traffic. Our use case requires ~200 req/min minimum.\n\nIs there a path to increased limits for Pro accounts? The documentation doesn't clarify if limits differ by tier."
+  },
+  {
+    "id": "fb_109",
+    "source": "Community Forum",
+    "user_tier": "Free",
+    "product_area": "Workers",
+    "sentiment": "Negative",
+    "content": "Getting Error 1101 constantly but the error message is completely unhelpful. My worker was running fine yesterday, no code changes. Checked the status page - nothing reported. Anyone know what could cause this randomly?"
+  },
+  {
+    "id": "fb_110",
+    "source": "Twitter",
+    "user_tier": "Pro",
+    "product_area": "D1",
+    "sentiment": "Neutral",
+    "content": "D1 is promising but the beta limitations are real. No foreign keys, 10GB max, and the read replication lag caught us off guard. Building a side project on it but wouldn't trust production data yet. @CloudflareDev when's GA?"
+  },
+  {
+    "id": "fb_111",
+    "source": "Discord",
+    "user_tier": "Free",
+    "product_area": "General/Billing",
+    "sentiment": "Negative",
+    "content": "anyone else getting 500 errors on the dashboard login? been trying for like 20 mins now just want to check my usage lmao"
+  },
+  {
+    "id": "fb_112",
+    "source": "Support Ticket",
+    "user_tier": "Enterprise",
+    "product_area": "D1",
+    "sentiment": "Negative",
+    "content": "Critical Issue: D1 backup restoration failed for production database (db_id: xxxx-xxxx). Attempted restore at 14:32 UTC, received confirmation message, but SELECT queries show data from current state not backup state. This is blocking our incident recovery. Require immediate assistance."
+  },
+  {
+    "id": "fb_113",
+    "source": "GitHub Issue",
+    "user_tier": "Free",
+    "product_area": "Workers",
+    "sentiment": "Negative",
+    "content": "### Wrangler CLI - Confusing Error Messages\n\nWhen running `wrangler dev` with an incorrectly configured R2 bucket binding, the error message references KV namespaces instead:\n\n```\nError: kv_namespaces binding is invalid\n```\n\nMy wrangler.toml only has r2_buckets configured. This took an hour to debug. The CLI should provide accurate error context."
+  },
+  {
+    "id": "fb_114",
+    "source": "Community Forum",
+    "user_tier": "Pro",
+    "product_area": "Workers AI",
+    "sentiment": "Negative",
+    "content": "Workers AI model hallucination is becoming a real problem for our customer support bot. We're using Llama-3 with explicit system prompts to only answer from our knowledge base, but it still invents product features that don't exist. Has anyone found effective prompt engineering strategies for this?"
+  },
+  {
+    "id": "fb_115",
+    "source": "Discord",
+    "user_tier": "Free",
+    "product_area": "D1",
+    "sentiment": "Negative",
+    "content": "ok so d1 just silently drops my INSERT if the row already exists instead of throwing a constraint error?? is this sqlite behavior or d1 specific? my local miniflare tests pass but prod just eats the data"
+  },
+  {
+    "id": "fb_116",
+    "source": "Twitter",
+    "user_tier": "Free",
+    "product_area": "General/Billing",
+    "sentiment": "Negative",
+    "content": "The @CloudflareDev docs for Workers pricing are outdated. Still references the old pricing model from 2023. Tried to estimate costs for a project and the numbers don't match what the dashboard shows at all."
+  },
+  {
+    "id": "fb_117",
+    "source": "Support Ticket",
+    "user_tier": "Enterprise",
+    "product_area": "Workers AI",
+    "sentiment": "Negative",
+    "content": "Our team has been evaluating Workers AI for internal tooling. The Llama-3 8B model latency is inconsistent, ranging from 400ms to 12 seconds for identical prompts. This variance is unacceptable for our use case. Please provide documentation on expected p50/p95/p99 latencies and any region-specific performance data."
+  },
+  {
+    "id": "fb_118",
+    "source": "GitHub Issue",
+    "user_tier": "Pro",
+    "product_area": "D1",
+    "sentiment": "Negative",
+    "content": "### D1 SQL Syntax Error on Valid Query\n\n**Query:**\n```sql\nSELECT * FROM users WHERE created_at > datetime('now', '-7 days')\n```\n\n**Error:** `D1_ERROR: SQL syntax error near \"datetime\"`\n\nThis is standard SQLite syntax. Works in sqlite3 CLI and better-sqlite3. Is datetime() not supported in D1?"
+  },
+  {
+    "id": "fb_119",
+    "source": "Discord",
+    "user_tier": "Free",
+    "product_area": "Workers",
+    "sentiment": "Negative",
+    "content": "wrangler publish worked fine last week now its wrangler deploy?? when did this change lol the old command just gives a cryptic error. had to dig through github issues to figure it out"
+  },
+  {
+    "id": "fb_120",
+    "source": "Community Forum",
+    "user_tier": "Pro",
+    "product_area": "General/Billing",
+    "sentiment": "Neutral",
+    "content": "Trying to understand how Workers, D1, and R2 billing interact. If my Worker reads from D1 and writes to R2 in a single request, am I charged for all three services separately? The billing docs show each product in isolation but not combined usage scenarios."
+  },
+  {
+    "id": "fb_121",
+    "source": "Support Ticket",
+    "user_tier": "Enterprise",
+    "product_area": "Workers",
+    "sentiment": "Negative",
+    "content": "Escalation required: Cold start latency on our Workers has degraded significantly over the past 72 hours. Our monitoring shows p99 cold starts increased from 450ms to 1.8s. No changes on our end. This is impacting real-time bidding operations where we have strict 100ms SLA requirements. Need root cause analysis ASAP."
+  },
+  {
+    "id": "fb_122",
+    "source": "Twitter",
+    "user_tier": "Free",
+    "product_area": "Workers AI",
+    "sentiment": "Positive",
+    "content": "Just tried Workers AI for a hobby project - the DX is actually really nice. Binding the AI model in wrangler.toml and calling it from the Worker felt seamless. Rate limits are tight but for free tier I can't complain"
+  },
+  {
+    "id": "fb_123",
+    "source": "Discord",
+    "user_tier": "Free",
+    "product_area": "Workers",
+    "sentiment": "Negative",
+    "content": "can someone explain bindings to me like im 5? the docs jump straight into kv and r2 examples but i dont even understand what a binding IS. is it like an env var?"
+  },
+  {
+    "id": "fb_124",
+    "source": "GitHub Issue",
+    "user_tier": "Pro",
+    "product_area": "Workers AI",
+    "sentiment": "Negative",
+    "content": "### Workers AI Rate Limit Error Not Returning Retry-After Header\n\nWhen hitting the rate limit on `/ai/run`, the 429 response does not include a `Retry-After` header. This makes implementing proper backoff logic impossible without guessing.\n\n**Expected:** 429 response includes `Retry-After: <seconds>` header\n**Actual:** No such header present, only generic rate limit error body"
+  },
+  {
+    "id": "fb_125",
+    "source": "Community Forum",
+    "user_tier": "Free",
+    "product_area": "D1",
+    "sentiment": "Negative",
+    "content": "The D1 beta limitations page says \"most SQLite features supported\" but doesn't give a definitive list. I've now discovered the hard way that UPSERT with ON CONFLICT doesn't work as expected. Would really appreciate a comprehensive compatibility matrix."
+  },
+  {
+    "id": "fb_126",
+    "source": "Discord",
+    "user_tier": "Pro",
+    "product_area": "General/Billing",
+    "sentiment": "Negative",
+    "content": "yo did anyone else's bill jump randomly this month? i have the same traffic as last month but got charged like 3x more. something about request duration billing changed??"
+  },
+  {
+    "id": "fb_127",
+    "source": "Support Ticket",
+    "user_tier": "Enterprise",
+    "product_area": "D1",
+    "sentiment": "Negative",
+    "content": "Following up on ticket #CF-98234. Our D1 database is still showing beta limitations despite being on an Enterprise plan. Specifically, we need the 10GB storage limit increased as discussed with our account team. Current usage is at 8.7GB and growing. Please advise on timeline for limit adjustment."
+  },
+  {
+    "id": "fb_128",
+    "source": "Twitter",
+    "user_tier": "Free",
+    "product_area": "Workers",
+    "sentiment": "Positive",
+    "content": "Finally figured out wrangler after a rough start. Once you understand the wrangler.toml structure and how bindings work, it's actually pretty elegant. The miniflare local dev experience is chef's kiss"
+  },
+  {
+    "id": "fb_129",
+    "source": "GitHub Issue",
+    "user_tier": "Pro",
+    "product_area": "D1",
+    "sentiment": "Neutral",
+    "content": "### Documentation Request: D1 Read Replica Behavior\n\nThe docs mention D1 uses read replicas at the edge but don't specify:\n1. Expected replication lag\n2. How to force reads from primary\n3. Consistency guarantees for read-after-write\n\nThis information is critical for designing applications with D1. Please update documentation with these details."
+  },
+  {
+    "id": "fb_130",
+    "source": "Community Forum",
+    "user_tier": "Free",
+    "product_area": "General/Billing",
+    "sentiment": "Negative",
+    "content": "Dashboard has been showing a 500 error for the past 3 hours when I try to access the Workers section. Status page shows all green. I just want to see my deployment logs. Is there an alternative way to access this information via wrangler CLI?"
+  }
+]

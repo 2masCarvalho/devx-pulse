@@ -9,6 +9,34 @@
 	"compatibility_date": "2025-09-27",
 	"observability": {
 		"enabled": true
+	},
+	// 1. O Cérebro (Workers AI)
+	"ai": {
+		"binding": "AI"
+	},
+	// 2. A Memória (D1 Database)
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "devx-pulse-db",
+			"database_id": "e8f38e3c-8605-4e1a-9540-8d8159c7ee63"
+		}
+	],
+	"queues": {
+		"producers": [
+			{
+				"binding": "FEEDBACK_QUEUE",
+				"queue": "devx-pulse-feedback-queue"
+			}
+		],
+		"consumers": [
+			{
+				"queue": "devx-pulse-feedback-queue",
+				"max_batch_size": 10,
+				"max_retries": 3,
+				"dead_letter_queue": "devx-pulse-dlq"
+			}
+		]
 	}
 	/**
 	 * Smart Placement
