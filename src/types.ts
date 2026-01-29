@@ -1,7 +1,6 @@
 export interface Env {
 	DB: D1Database;
 	AI: Ai;
-	FEEDBACK_QUEUE: Queue<FeedbackInput>;
 }
 
 export interface FeedbackInput {

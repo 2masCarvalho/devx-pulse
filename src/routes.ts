@@ -1,7 +1,8 @@
 import type { Env, FeedbackInput, FeedbackFilters } from './types';
 import { VALID_SENTIMENTS } from './types';
-import { queryFeedback, getStats, queryReviewQueue, updateHumanSentiment } from './db';
+import { queryFeedback, getStats, queryReviewQueue, updateHumanSentiment, insertFeedback } from './db';
 import { renderDashboard, renderReviewPage } from './templates';
+import { analyzeFeedback } from './ai';
 
 export async function handleRequest(request: Request, env: Env): Promise<Response> {
 	const url = new URL(request.url);
@@ -60,14 +61,24 @@ async function handlePostFeedback(request: Request, env: Env): Promise<Response>
 		});
 	}
 
-	await env.FEEDBACK_QUEUE.sendBatch(validItems.map((item) => ({ body: item })));
+	let processed = 0;
+	for (const item of validItems) {
+		try {
+			const analysis = await analyzeFeedback(env.AI, item.content);
+			await insertFeedback(env.DB, item, analysis);
+			processed++;
+		} catch (err) {
+			console.error('Error processing feedback item:', err);
+		}
+	}
 
 	return new Response(
 		JSON.stringify({
-			message: `Accepted ${validItems.length} items for processing`,
-			queued: validItems.length,
+			message: `Processed ${processed} of ${validItems.length} items`,
+			processed,
+			total: validItems.length,
 		}),
-		{ status: 202, headers: { 'Content-Type': 'application/json' } }
+		{ status: 200, headers: { 'Content-Type': 'application/json' } }
 	);
 }
 
