@@ -34,6 +34,7 @@ export interface FeedbackFilters {
 	user_tier?: string;
 	product_area?: string;
 	sentiment?: string;
+	critical?: boolean;
 	search?: string;
 	sort_by?: string;
 	sort_order?: 'ASC' | 'DESC';

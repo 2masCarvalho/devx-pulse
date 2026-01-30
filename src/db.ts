@@ -11,7 +11,7 @@ export async function insertFeedback(db: D1Database, item: FeedbackInput, analys
 		.run();
 }
 
-export async function queryFeedback(db: D1Database, filters: FeedbackFilters): Promise<PaginatedResult<FeedbackRow>> {
+function buildWhereClause(filters: FeedbackFilters): { whereClause: string; params: (string | number)[] } {
 	const conditions: string[] = [];
 	const params: (string | number)[] = [];
 
@@ -31,6 +31,9 @@ export async function queryFeedback(db: D1Database, filters: FeedbackFilters): P
 		conditions.push('sentiment = ?');
 		params.push(filters.sentiment);
 	}
+	if (filters.critical) {
+		conditions.push("user_tier = 'Enterprise' AND sentiment = 'Negative'");
+	}
 	if (filters.search && filters.search.trim().length > 0) {
 		conditions.push('(content LIKE ? OR ai_analysis LIKE ?)');
 		const searchParam = `%${filters.search.trim()}%`;
@@ -38,6 +41,11 @@ export async function queryFeedback(db: D1Database, filters: FeedbackFilters): P
 	}
 
 	const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+	return { whereClause, params };
+}
+
+export async function queryFeedback(db: D1Database, filters: FeedbackFilters): Promise<PaginatedResult<FeedbackRow>> {
+	const { whereClause, params } = buildWhereClause(filters);
 
 	const sortCol =
 		filters.sort_by && (VALID_SORT_COLUMNS as readonly string[]).includes(filters.sort_by) ? filters.sort_by : 'id';
@@ -65,7 +73,10 @@ export async function queryFeedback(db: D1Database, filters: FeedbackFilters): P
 	};
 }
 
-export async function getStats(db: D1Database): Promise<DashboardStats> {
+export async function getStats(db: D1Database, filters: FeedbackFilters = {}): Promise<DashboardStats> {
+	const { whereClause, params } = buildWhereClause(filters);
+	const andClause = whereClause ? `${whereClause} AND` : 'WHERE';
+
 	const [totals, byArea, bySentiment, enterpriseNeg, lowConf, byProductSentiment] = await Promise.all([
 		db.prepare(
 			`SELECT
@@ -74,13 +85,13 @@ export async function getStats(db: D1Database): Promise<DashboardStats> {
 				SUM(CASE WHEN sentiment = 'Positive' THEN 1 ELSE 0 END) as positive,
 				SUM(CASE WHEN sentiment = 'Neutral' THEN 1 ELSE 0 END) as neutral,
 				SUM(CASE WHEN sentiment = 'Unknown' THEN 1 ELSE 0 END) as unknown
-			FROM feedback`
-		).first(),
-		db.prepare(`SELECT product_area, COUNT(*) as count FROM feedback GROUP BY product_area`).all(),
-		db.prepare(`SELECT sentiment, COUNT(*) as count FROM feedback GROUP BY sentiment`).all(),
-		db.prepare(`SELECT COUNT(*) as count FROM feedback WHERE user_tier = 'Enterprise' AND sentiment = 'Negative'`).first(),
-		db.prepare(`SELECT COUNT(*) as count FROM feedback WHERE confidence IS NOT NULL AND confidence < 0.6`).first(),
-		db.prepare(`SELECT product_area, sentiment, COUNT(*) as count FROM feedback GROUP BY product_area, sentiment`).all(),
+			FROM feedback ${whereClause}`
+		).bind(...params).first(),
+		db.prepare(`SELECT product_area, COUNT(*) as count FROM feedback ${whereClause} GROUP BY product_area`).bind(...params).all(),
+		db.prepare(`SELECT sentiment, COUNT(*) as count FROM feedback ${whereClause} GROUP BY sentiment`).bind(...params).all(),
+		db.prepare(`SELECT COUNT(*) as count FROM feedback ${andClause} user_tier = 'Enterprise' AND sentiment = 'Negative'`).bind(...params).first(),
+		db.prepare(`SELECT COUNT(*) as count FROM feedback ${andClause} confidence IS NOT NULL AND confidence < 0.6`).bind(...params).first(),
+		db.prepare(`SELECT product_area, sentiment, COUNT(*) as count FROM feedback ${whereClause} GROUP BY product_area, sentiment`).bind(...params).all(),
 	]);
 
 	const byProductAreaMap: Record<string, number> = {};

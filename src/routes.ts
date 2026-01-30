@@ -84,7 +84,7 @@ async function handlePostFeedback(request: Request, env: Env): Promise<Response>
 
 async function handleDashboard(url: URL, env: Env): Promise<Response> {
 	const filters = parseFiltersFromUrl(url);
-	const [feedbackResult, stats] = await Promise.all([queryFeedback(env.DB, filters), getStats(env.DB)]);
+	const [feedbackResult, stats] = await Promise.all([queryFeedback(env.DB, filters), getStats(env.DB, filters)]);
 
 	const html = renderDashboard(feedbackResult, stats, filters);
 	return new Response(html, {
@@ -167,6 +167,7 @@ function parseFiltersFromUrl(url: URL): FeedbackFilters {
 		user_tier: url.searchParams.get('tier') || undefined,
 		product_area: url.searchParams.get('product') || undefined,
 		sentiment: url.searchParams.get('sentiment') || undefined,
+		critical: url.searchParams.get('critical') === 'true' || undefined,
 		search: url.searchParams.get('search') || undefined,
 		sort_by: url.searchParams.get('sort') || undefined,
 		sort_order: url.searchParams.get('order') === 'ASC' ? 'ASC' : 'DESC',

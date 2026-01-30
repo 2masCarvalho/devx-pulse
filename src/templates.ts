@@ -47,26 +47,26 @@ function layoutWrapper(title: string, activeNav: string, bodyContent: string, sc
 function sentimentColor(sentiment: string): string {
 	switch (sentiment) {
 		case 'Negative':
-			return 'text-red-600 dark:text-red-400';
+			return 'text-red-400';
 		case 'Positive':
-			return 'text-green-600 dark:text-green-400';
+			return 'text-green-400';
 		case 'Unknown':
-			return 'text-amber-600 dark:text-amber-400';
+			return 'text-amber-400';
 		default:
-			return 'text-gray-500 dark:text-gray-400';
+			return 'text-slate-400';
 	}
 }
 
 function sentimentBg(sentiment: string): string {
 	switch (sentiment) {
 		case 'Negative':
-			return 'bg-red-50 dark:bg-red-950';
+			return 'bg-red-500/10 border border-red-500/20';
 		case 'Positive':
-			return 'bg-green-50 dark:bg-green-950';
+			return 'bg-green-500/10 border border-green-500/20';
 		case 'Unknown':
-			return 'bg-amber-50 dark:bg-amber-950';
+			return 'bg-amber-500/10 border border-amber-500/20';
 		default:
-			return '';
+			return 'bg-slate-500/10 border border-slate-500/20';
 	}
 }
 
@@ -77,6 +77,7 @@ function buildQueryString(filters: FeedbackFilters, overrides: Partial<FeedbackF
 	if (merged.user_tier) params.set('tier', merged.user_tier);
 	if (merged.product_area) params.set('product', merged.product_area);
 	if (merged.sentiment) params.set('sentiment', merged.sentiment);
+	if (merged.critical) params.set('critical', 'true');
 	if (merged.search) params.set('search', merged.search);
 	if (merged.sort_by) params.set('sort', merged.sort_by);
 	if (merged.sort_order) params.set('order', merged.sort_order);
@@ -85,37 +86,47 @@ function buildQueryString(filters: FeedbackFilters, overrides: Partial<FeedbackF
 	return qs ? `?${qs}` : '';
 }
 
-function sortLink(filters: FeedbackFilters, column: string, label: string): string {
+function headerTooltip(label: string, tooltip: string, align: 'center' | 'left' = 'center'): string {
+	const posClass = align === 'left' ? 'left-0' : 'left-1/2 -translate-x-1/2';
+	const arrowPos = align === 'left' ? 'left-3' : 'left-1/2 -translate-x-1/2';
+	return `<span class="group relative cursor-default">${label}<span class="absolute top-full ${posClass} mt-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">${tooltip}<span class="absolute bottom-full ${arrowPos} border-4 border-transparent border-b-gray-900"></span></span></span>`;
+}
+
+function sortLink(filters: FeedbackFilters, column: string, label: string, tooltip?: string): string {
 	const isActive = filters.sort_by === column;
 	const nextOrder = isActive && filters.sort_order === 'DESC' ? 'ASC' : 'DESC';
 	const arrow = isActive ? (filters.sort_order === 'ASC' ? ' &uarr;' : ' &darr;') : '';
 	const qs = buildQueryString(filters, { sort_by: column, sort_order: nextOrder, page: 1 });
-	return `<a href="${qs}" class="hover:text-orange-600 dark:hover:text-orange-400">${label}${arrow}</a>`;
+	const linkContent = `<a href="${qs}" class="hover:text-orange-600 dark:hover:text-orange-400">${label}${arrow}</a>`;
+	if (tooltip) {
+		return `<span class="group relative">${linkContent}<span class="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">${tooltip}<span class="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-900"></span></span></span>`;
+	}
+	return linkContent;
 }
 
 function renderStatCards(stats: DashboardStats): string {
 	return `<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
-	<div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border-l-4 border-indigo-500">
+	<a href="/" class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border-l-4 border-indigo-500 cursor-pointer hover:scale-105 hover:shadow-lg transition-all">
 		<p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Total</p>
 		<p class="text-2xl font-bold text-indigo-600 dark:text-indigo-400 mt-1">${stats.total}</p>
-	</div>
-	<div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border-l-4 border-red-500">
+	</a>
+	<a href="/?sentiment=Negative" class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border-l-4 border-red-500 cursor-pointer hover:scale-105 hover:shadow-lg transition-all">
 		<p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Negative</p>
 		<p class="text-2xl font-bold text-red-600 dark:text-red-400 mt-1">${stats.negative}</p>
-	</div>
-	<div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border-l-4 border-green-500">
+	</a>
+	<a href="/?sentiment=Positive" class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border-l-4 border-green-500 cursor-pointer hover:scale-105 hover:shadow-lg transition-all">
 		<p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Positive</p>
 		<p class="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">${stats.positive}</p>
-	</div>
-	<div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border-l-4 border-gray-400">
+	</a>
+	<a href="/?sentiment=Neutral" class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border-l-4 border-gray-400 cursor-pointer hover:scale-105 hover:shadow-lg transition-all">
 		<p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Neutral</p>
 		<p class="text-2xl font-bold text-gray-500 dark:text-gray-400 mt-1">${stats.neutral}</p>
-	</div>
-	<div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border-l-4 border-red-700">
+	</a>
+	<a href="/?critical=true" class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border-l-4 border-red-700 cursor-pointer hover:scale-105 hover:shadow-lg transition-all">
 		<p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Enterprise Critical</p>
 		<p class="text-2xl font-bold text-red-700 dark:text-red-300 mt-1">${stats.enterprise_negative}</p>
-	</div>
-	<a href="/review" class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border-l-4 border-amber-500 hover:shadow-md transition-shadow">
+	</a>
+	<a href="/review" class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border-l-4 border-amber-500 cursor-pointer hover:scale-105 hover:shadow-lg transition-all">
 		<p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Needs Review</p>
 		<p class="text-2xl font-bold text-amber-600 dark:text-amber-400 mt-1">${stats.low_confidence}</p>
 	</a>
@@ -205,8 +216,8 @@ function renderFilters(filters: FeedbackFilters): string {
 		(s) => `<option value="${s}" ${filters.sentiment === s ? 'selected' : ''}>${s}</option>`
 	).join('');
 
-	return `<form method="GET" action="/" class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-6">
-	<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 items-end">
+	return `<form method="GET" action="/" id="filterForm" class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-6">
+	<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-3 items-end">
 		<div>
 			<label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Source</label>
 			<select name="source" class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm py-1.5 px-2">
@@ -240,6 +251,13 @@ function renderFilters(filters: FeedbackFilters): string {
 			<input type="text" name="search" value="${escapeHtml(filters.search || '')}" placeholder="Search content..."
 				class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm py-1.5 px-2">
 		</div>
+		<div class="flex items-center pt-4">
+			<label class="relative inline-flex items-center cursor-pointer">
+				<input type="checkbox" name="critical" value="true" ${filters.critical ? 'checked' : ''} onchange="document.getElementById('filterForm').submit()" class="sr-only peer">
+				<div class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-red-300 dark:peer-focus:ring-red-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:after:border-gray-500 peer-checked:bg-red-500"></div>
+				<span class="ml-2 text-xs font-medium text-gray-500 dark:text-gray-400">Critical Only</span>
+			</label>
+		</div>
 		<div class="flex gap-2">
 			<button type="submit" class="flex-1 px-3 py-1.5 bg-orange-600 text-white rounded-md text-sm font-medium hover:bg-orange-700 transition-colors">Filter</button>
 			<a href="/" class="px-3 py-1.5 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md text-sm font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">Clear</a>
@@ -258,6 +276,7 @@ function renderRow(row: FeedbackRow, filters: FeedbackFilters): string {
 	const truncatedContent = row.content.length > 120 ? row.content.slice(0, 120) + '...' : row.content;
 
 	return `<tr class="${rowBg} hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+	<td class="w-10 px-2 py-2.5 text-center">${isCritical ? '<svg class="inline-block w-4 h-4 text-red-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.168 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 6a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 6zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/></svg>' : ''}</td>
 	<td class="px-3 py-2.5 text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">${row.id}</td>
 	<td class="px-3 py-2.5 text-xs whitespace-nowrap">${escapeHtml(row.source)}</td>
 	<td class="px-3 py-2.5 text-xs whitespace-nowrap">
@@ -265,8 +284,7 @@ function renderRow(row: FeedbackRow, filters: FeedbackFilters): string {
 	</td>
 	<td class="px-3 py-2.5 text-xs whitespace-nowrap">${escapeHtml(row.product_area)}</td>
 	<td class="px-3 py-2.5 text-xs whitespace-nowrap">
-		${isCritical ? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">CRITICAL</span>` : ''}
-		${hasCorrected ? `<span class="line-through ${sentimentColor(row.sentiment)}">${escapeHtml(row.sentiment)}</span> <span class="font-medium text-blue-600 dark:text-blue-400">${escapeHtml(row.human_sentiment!)}</span>` : `<span class="font-medium ${sentimentColor(row.sentiment)}">${escapeHtml(row.sentiment)}</span>`}
+		<span class="inline-flex items-center gap-1.5"><span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium uppercase tracking-wide ${sentimentColor(hasCorrected ? row.human_sentiment! : row.sentiment)} ${sentimentBg(hasCorrected ? row.human_sentiment! : row.sentiment)}">${escapeHtml(hasCorrected ? row.human_sentiment! : row.sentiment)}</span>${hasCorrected ? `<span class="group relative cursor-default"><svg class="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" viewBox="0 0 20 20" fill="currentColor"><path d="M2.695 14.763l-1.262 3.154a.5.5 0 00.65.65l3.155-1.262a4 4 0 001.343-.885L17.5 5.5a2.121 2.121 0 00-3-3L3.58 13.42a4 4 0 00-.885 1.343z"/></svg><span class="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">Original: ${escapeHtml(row.sentiment)}<span class="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-900"></span></span></span>` : ''}</span>
 	</td>
 	<td class="px-3 py-2.5 text-xs whitespace-nowrap">
 		${row.confidence !== null ? `<span class="${isLowConfidence ? 'text-amber-600 dark:text-amber-400 font-medium' : 'text-gray-500 dark:text-gray-400'}">${(row.confidence * 100).toFixed(0)}%</span>` : '<span class="text-gray-300 dark:text-gray-600">-</span>'}
@@ -311,19 +329,20 @@ ${renderFilters(filters)}
 		<table class="w-full text-sm">
 			<thead class="bg-gray-50 dark:bg-gray-700/50">
 				<tr>
+					<th class="w-10 px-2 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">${headerTooltip('STS', 'Critical Status: High priority items to review first.', 'left')}</th>
 					<th class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">${sortLink(filters, 'id', 'ID')}</th>
 					<th class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">${sortLink(filters, 'source', 'Source')}</th>
-					<th class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">${sortLink(filters, 'user_tier', 'Tier')}</th>
+					<th class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">${sortLink(filters, 'user_tier', 'Tier', 'Customer Subscription Plan')}</th>
 					<th class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Product</th>
-					<th class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">${sortLink(filters, 'sentiment', 'Sentiment')}</th>
-					<th class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">${sortLink(filters, 'confidence', 'Conf.')}</th>
+					<th class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">${sortLink(filters, 'sentiment', 'Sentiment', 'AI Detected Sentiment')}</th>
+					<th class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">${sortLink(filters, 'confidence', 'Conf.', 'AI Confidence Score (0-100%)')}</th>
 					<th class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Content</th>
 					<th class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">AI Summary</th>
 					<th class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">${sortLink(filters, 'created_at', 'Date')}</th>
 				</tr>
 			</thead>
 			<tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-				${tableRows || `<tr><td colspan="9" class="px-3 py-8 text-center text-gray-400 dark:text-gray-500">No feedback items found matching your filters.</td></tr>`}
+				${tableRows || `<tr><td colspan="10" class="px-3 py-8 text-center text-gray-400 dark:text-gray-500">No feedback items found matching your filters.</td></tr>`}
 			</tbody>
 		</table>
 	</div>
@@ -342,7 +361,7 @@ export function renderReviewPage(result: PaginatedResult<FeedbackRow>): string {
 			return `<div class="bg-white dark:bg-gray-800 rounded-lg shadow p-5 border-l-4 ${borderColor}" data-feedback-id="${row.id}">
 	<div class="flex flex-col sm:flex-row justify-between items-start gap-2 mb-3">
 		<div class="flex flex-wrap gap-2 items-center">
-			<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${sentimentColor(row.sentiment)} bg-gray-100 dark:bg-gray-700">${escapeHtml(row.sentiment)}</span>
+			<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium uppercase tracking-wide ${sentimentColor(row.sentiment)} ${sentimentBg(row.sentiment)}">${escapeHtml(row.sentiment)}</span>
 			<span class="text-xs text-gray-500 dark:text-gray-400">Confidence: <strong class="text-amber-600 dark:text-amber-400">${row.confidence !== null ? (row.confidence * 100).toFixed(0) + '%' : 'N/A'}</strong></span>
 			${isEnterprise ? '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">Enterprise</span>' : ''}
 		</div>
