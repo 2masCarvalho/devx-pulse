@@ -4,7 +4,7 @@
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "sparkling-recipe-58b5",
+	"name": "devx-pulse",
 	"main": "src/index.ts",
 	"compatibility_date": "2025-09-27",
 	"observability": {
